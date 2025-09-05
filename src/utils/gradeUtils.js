@@ -62,9 +62,11 @@ export const calculateGradeTrend = (dataPoints) => {
 
 export const formatChartData = (grades, assignments) => {
   if (!grades || !assignments || grades.length === 0) return { series: [], categories: [] };
-  
-  const sortedGrades = grades.sort((a, b) => new Date(a.submittedDate) - new Date(b.submittedDate));
-  
+const sortedGrades = grades.sort((a, b) => {
+    const dateA = a.submittedDate && !isNaN(new Date(a.submittedDate).getTime()) ? new Date(a.submittedDate) : new Date(0);
+    const dateB = b.submittedDate && !isNaN(new Date(b.submittedDate).getTime()) ? new Date(b.submittedDate) : new Date(0);
+    return dateA - dateB;
+  });
   const dataPoints = sortedGrades.map(grade => {
     const assignment = assignments.find(a => a.Id === grade.assignmentId);
     return {

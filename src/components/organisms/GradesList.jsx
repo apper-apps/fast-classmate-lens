@@ -31,9 +31,9 @@ const GradesList = ({
     let aValue = a[sortField];
     let bValue = b[sortField];
 
-    if (sortField === "dueDate") {
-      aValue = new Date(aValue);
-      bValue = new Date(bValue);
+if (sortField === "dueDate") {
+      aValue = aValue && !isNaN(new Date(aValue).getTime()) ? new Date(aValue) : new Date(0);
+      bValue = bValue && !isNaN(new Date(bValue).getTime()) ? new Date(bValue) : new Date(0);
     }
 
     if (sortDirection === "asc") {
@@ -168,7 +168,7 @@ const GradesList = ({
                       </span>
                     </td>
                     <td className="py-4 px-4 text-center text-sm text-slate-900">
-                      {format(new Date(assignment.dueDate), "MMM dd, yyyy")}
+{assignment.dueDate && !isNaN(new Date(assignment.dueDate).getTime()) ? format(new Date(assignment.dueDate), "MMM dd, yyyy") : "Invalid Date"}
                     </td>
                     <td className="py-4 px-4 text-center text-sm font-medium text-slate-900">
                       {assignment.totalPoints}

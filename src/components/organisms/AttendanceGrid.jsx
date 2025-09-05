@@ -17,19 +17,25 @@ const AttendanceGrid = ({
 
   const weekStart = startOfWeek(selectedDate, { weekStartsOn: 1 });
   const weekDays = Array.from({ length: 5 }, (_, i) => addDays(weekStart, i));
-
-  const getAttendanceStatus = (studentId, date) => {
-    const dateStr = format(date, "yyyy-MM-dd");
+const getAttendanceStatus = (studentId, date) => {
+    if (!date || isNaN(new Date(date).getTime())) {
+      return "unmarked";
+    }
+    const dateStr = format(new Date(date), "yyyy-MM-dd");
     const record = attendance.find(r => 
       r.studentId === studentId && r.date === dateStr
     );
     return record?.status || "unmarked";
   };
 
-  const handleStatusChange = async (studentId, date, status) => {
+const handleStatusChange = async (studentId, date, status) => {
     setIsUpdating(true);
     try {
-      const dateStr = format(date, "yyyy-MM-dd");
+      if (!date || isNaN(new Date(date).getTime())) {
+        toast.error("Invalid date");
+        return;
+      }
+      const dateStr = format(new Date(date), "yyyy-MM-dd");
       await onUpdateAttendance(studentId, dateStr, status);
       toast.success("Attendance updated successfully!");
     } catch (error) {
@@ -75,9 +81,9 @@ const AttendanceGrid = ({
         <CardTitle className="flex items-center space-x-2">
           <ApperIcon name="Calendar" size={20} className="text-primary" />
           <span>Weekly Attendance</span>
-        </CardTitle>
+</CardTitle>
         <p className="text-sm text-slate-600">
-          Week of {format(weekStart, "MMM dd, yyyy")}
+          Week of {weekStart && !isNaN(new Date(weekStart).getTime()) ? format(new Date(weekStart), "MMM dd, yyyy") : "Invalid Date"}
         </p>
       </CardHeader>
       
@@ -90,12 +96,12 @@ const AttendanceGrid = ({
                   Student
                 </th>
                 {weekDays.map(day => (
-                  <th key={day.toISOString()} className="text-center py-3 px-2 font-medium text-slate-700 min-w-[120px]">
+<th key={day.toISOString()} className="text-center py-3 px-2 font-medium text-slate-700 min-w-[120px]">
                     <div className="text-sm">
-                      {format(day, "EEE")}
+                      {day && !isNaN(new Date(day).getTime()) ? format(new Date(day), "EEE") : "Invalid"}
                     </div>
                     <div className="text-xs text-slate-500">
-                      {format(day, "MMM dd")}
+                      {day && !isNaN(new Date(day).getTime()) ? format(new Date(day), "MMM dd") : "Invalid Date"}
                     </div>
                   </th>
                 ))}

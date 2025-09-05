@@ -33,11 +33,18 @@ export const generateWeekDays = (date = new Date()) => {
 };
 
 export const formatAttendanceDate = (date) => {
+  if (!date || isNaN(new Date(date).getTime())) {
+    return "Invalid Date";
+  }
   return format(new Date(date), "MMM dd, yyyy");
 };
 
 export const getTodayAttendanceStats = (students, attendanceRecords) => {
-  const today = format(new Date(), "yyyy-MM-dd");
+  const now = new Date();
+  if (isNaN(now.getTime())) {
+    return { present: 0, absent: 0, late: 0, total: students?.length || 0, percentage: 0 };
+  }
+  const today = format(now, "yyyy-MM-dd");
   const todayAttendance = attendanceRecords.filter(record => record.date_c === today);
   
   const present = todayAttendance.filter(record => record.status_c === "present").length;
