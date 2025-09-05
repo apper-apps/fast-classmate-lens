@@ -3,6 +3,7 @@ import { useOutletContext } from "react-router-dom";
 import { toast } from "react-toastify";
 import Header from "@/components/organisms/Header";
 import GradesList from "@/components/organisms/GradesList";
+import AssignmentModal from "@/components/organisms/AssignmentModal";
 import Loading from "@/components/ui/Loading";
 import Error from "@/components/ui/Error";
 import Empty from "@/components/ui/Empty";
@@ -12,12 +13,12 @@ import { studentsService } from "@/services/api/studentsService";
 
 const Grades = () => {
   const { onMobileMenuToggle } = useOutletContext();
-  const [assignments, setAssignments] = useState([]);
+const [assignments, setAssignments] = useState([]);
   const [grades, setGrades] = useState([]);
   const [students, setStudents] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
-
+  const [isAssignmentModalOpen, setIsAssignmentModalOpen] = useState(false);
   useEffect(() => {
     loadGradesData();
   }, []);
@@ -44,9 +45,12 @@ const Grades = () => {
     }
   };
 
-  const handleCreateAssignment = () => {
-    // This would typically open a modal or navigate to create assignment page
-    toast.info("Create assignment functionality coming soon!");
+const handleCreateAssignment = () => {
+    setIsAssignmentModalOpen(true);
+  };
+
+  const handleAssignmentCreated = (newAssignment) => {
+    setAssignments(prev => [...prev, newAssignment]);
   };
 
   const handleViewGrades = (assignment) => {
@@ -111,7 +115,7 @@ const Grades = () => {
     );
   }
 
-  return (
+return (
     <div className="flex-1 flex flex-col overflow-hidden">
       <Header
         title="Grades"
@@ -137,6 +141,12 @@ const Grades = () => {
           />
         </div>
       </main>
+
+      <AssignmentModal
+        isOpen={isAssignmentModalOpen}
+        onClose={() => setIsAssignmentModalOpen(false)}
+        onAssignmentCreated={handleAssignmentCreated}
+      />
     </div>
   );
 };
