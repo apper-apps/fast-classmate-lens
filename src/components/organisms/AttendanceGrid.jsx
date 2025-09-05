@@ -11,11 +11,13 @@ const AttendanceGrid = ({
   students = [], 
   attendance = [], 
   onUpdateAttendance,
-  selectedDate = new Date()
+selectedDate = new Date()
 }) => {
   const [isUpdating, setIsUpdating] = useState(false);
 
-  const weekStart = startOfWeek(selectedDate, { weekStartsOn: 1 });
+  // Ensure selectedDate is valid before using it
+  const validSelectedDate = selectedDate && !isNaN(new Date(selectedDate).getTime()) ? new Date(selectedDate) : new Date();
+  const weekStart = startOfWeek(validSelectedDate, { weekStartsOn: 1 });
   const weekDays = Array.from({ length: 5 }, (_, i) => addDays(weekStart, i));
 const getAttendanceStatus = (studentId, date) => {
     if (!date || isNaN(new Date(date).getTime())) {
@@ -82,7 +84,7 @@ const handleStatusChange = async (studentId, date, status) => {
           <ApperIcon name="Calendar" size={20} className="text-primary" />
           <span>Weekly Attendance</span>
 </CardTitle>
-        <p className="text-sm text-slate-600">
+<p className="text-sm text-slate-600">
           Week of {weekStart && !isNaN(new Date(weekStart).getTime()) ? format(new Date(weekStart), "MMM dd, yyyy") : "Invalid Date"}
         </p>
       </CardHeader>
@@ -95,8 +97,8 @@ const handleStatusChange = async (studentId, date, status) => {
                 <th className="text-left py-3 px-4 font-medium text-slate-700 min-w-[200px]">
                   Student
                 </th>
-                {weekDays.map(day => (
-<th key={day.toISOString()} className="text-center py-3 px-2 font-medium text-slate-700 min-w-[120px]">
+{weekDays.map(day => (
+                  <th key={day && !isNaN(new Date(day).getTime()) ? day.toISOString() : Math.random()} className="text-center py-3 px-2 font-medium text-slate-700 min-w-[120px]">
                     <div className="text-sm">
                       {day && !isNaN(new Date(day).getTime()) ? format(new Date(day), "EEE") : "Invalid"}
                     </div>

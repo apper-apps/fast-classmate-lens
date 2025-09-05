@@ -90,9 +90,16 @@ const PerformanceChart = ({ studentId, className }) => {
         return gradesData;
     }
     
-    return gradesData.filter(grade => {
-      const gradeDate = parseISO(grade.submittedDate);
-      return isAfter(gradeDate, startDate) && isBefore(gradeDate, endDate);
+return gradesData.filter(grade => {
+      if (!grade.submittedDate || typeof grade.submittedDate !== 'string') {
+        return false;
+      }
+      try {
+        const gradeDate = parseISO(grade.submittedDate);
+        return !isNaN(gradeDate.getTime()) && isAfter(gradeDate, startDate) && isBefore(gradeDate, endDate);
+      } catch (error) {
+        return false;
+      }
     });
   };
 
@@ -110,16 +117,31 @@ const PerformanceChart = ({ studentId, className }) => {
       return;
     }
     
-    // Sort grades by submission date
-    const sortedGrades = filteredGrades.sort((a, b) => 
-      new Date(a.submittedDate) - new Date(b.submittedDate)
-    );
+// Sort grades by submission date
+    const sortedGrades = filteredGrades.sort((a, b) => {
+      const dateA = a.submittedDate && !isNaN(new Date(a.submittedDate).getTime()) ? new Date(a.submittedDate) : new Date(0);
+      const dateB = b.submittedDate && !isNaN(new Date(b.submittedDate).getTime()) ? new Date(b.submittedDate) : new Date(0);
+      return dateA - dateB;
+    });
     
     // Create data points for the chart
-    const dataPoints = sortedGrades.map(grade => {
+const dataPoints = sortedGrades.map(grade => {
       const assignment = assignments.find(a => a.Id === grade.assignmentId);
+      let formattedDate = 'Invalid Date';
+      
+      if (grade.submittedDate && typeof grade.submittedDate === 'string') {
+        try {
+          const parsedDate = parseISO(grade.submittedDate);
+          if (!isNaN(parsedDate.getTime())) {
+            formattedDate = format(parsedDate, 'MMM dd');
+          }
+        } catch (error) {
+          formattedDate = 'Invalid Date';
+        }
+      }
+      
       return {
-        x: format(parseISO(grade.submittedDate), 'MMM dd'),
+        x: formattedDate,
         y: grade.score,
         assignment: assignment?.title || 'Unknown Assignment',
         category: assignment?.category || 'N/A'
