@@ -16,11 +16,11 @@ selectedDate = new Date()
   const [isUpdating, setIsUpdating] = useState(false);
 
   // Ensure selectedDate is valid before using it
-  const validSelectedDate = selectedDate && !isNaN(new Date(selectedDate).getTime()) ? new Date(selectedDate) : new Date();
+const validSelectedDate = selectedDate && !isNaN(new Date(selectedDate).getTime()) ? new Date(selectedDate) : new Date();
   const weekStart = startOfWeek(validSelectedDate, { weekStartsOn: 1 });
   const weekDays = Array.from({ length: 5 }, (_, i) => addDays(weekStart, i));
 const getAttendanceStatus = (studentId, date) => {
-    if (!date || isNaN(new Date(date).getTime())) {
+if (!date || isNaN(new Date(date).getTime())) {
       return "unmarked";
     }
     const dateStr = format(new Date(date), "yyyy-MM-dd");
@@ -33,7 +33,7 @@ const getAttendanceStatus = (studentId, date) => {
 const handleStatusChange = async (studentId, date, status) => {
     setIsUpdating(true);
     try {
-      if (!date || isNaN(new Date(date).getTime())) {
+if (!date || isNaN(new Date(date).getTime())) {
         toast.error("Invalid date");
         return;
       }
@@ -85,7 +85,7 @@ const handleStatusChange = async (studentId, date, status) => {
           <span>Weekly Attendance</span>
 </CardTitle>
 <p className="text-sm text-slate-600">
-          Week of {weekStart && !isNaN(new Date(weekStart).getTime()) ? format(new Date(weekStart), "MMM dd, yyyy") : "Invalid Date"}
+Week of {weekStart && !isNaN(weekStart.getTime()) ? format(weekStart, "MMM dd, yyyy") : "Invalid Date"}
         </p>
       </CardHeader>
       
@@ -98,12 +98,12 @@ const handleStatusChange = async (studentId, date, status) => {
                   Student
                 </th>
 {weekDays.map(day => (
-                  <th key={day && !isNaN(new Date(day).getTime()) ? day.toISOString() : Math.random()} className="text-center py-3 px-2 font-medium text-slate-700 min-w-[120px]">
+                  <th key={day && !isNaN(day.getTime()) ? day.toISOString() : Math.random()} className="text-center py-3 px-2 font-medium text-slate-700 min-w-[120px]">
                     <div className="text-sm">
-                      {day && !isNaN(new Date(day).getTime()) ? format(new Date(day), "EEE") : "Invalid"}
+{day && !isNaN(day.getTime()) ? format(day, "EEE") : "Invalid"}
                     </div>
                     <div className="text-xs text-slate-500">
-                      {day && !isNaN(new Date(day).getTime()) ? format(new Date(day), "MMM dd") : "Invalid Date"}
+                      {day && !isNaN(day.getTime()) ? format(day, "MMM dd") : "Invalid Date"}
                     </div>
                   </th>
                 ))}
@@ -131,8 +131,8 @@ const handleStatusChange = async (studentId, date, status) => {
                   </td>
                   {weekDays.map(day => {
                     const status = getAttendanceStatus(student.Id, day);
-                    return (
-                      <td key={day.toISOString()} className="py-4 px-2 text-center">
+return (
+                      <td key={day && !isNaN(day.getTime()) ? day.toISOString() : Math.random()} className="py-4 px-2 text-center">
                         <div className="flex space-x-1 justify-center">
                           {["present", "late", "absent"].map(statusOption => (
                             <button
