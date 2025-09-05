@@ -132,7 +132,7 @@ const dataPoints = sortedGrades.map(grade => {
       if (grade.submittedDate && typeof grade.submittedDate === 'string') {
         try {
           const parsedDate = parseISO(grade.submittedDate);
-          if (!isNaN(parsedDate.getTime())) {
+if (parsedDate && !isNaN(parsedDate.getTime()) && parsedDate.getTime() !== 0) {
             formattedDate = format(parsedDate, 'MMM dd');
           }
         } catch (error) {

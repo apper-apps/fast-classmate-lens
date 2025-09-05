@@ -62,11 +62,18 @@ export const calculateGradeTrend = (dataPoints) => {
 
 export const formatChartData = (grades, assignments) => {
   if (!grades || !assignments || grades.length === 0) return { series: [], categories: [] };
-const sortedGrades = grades.sort((a, b) => {
-    const dateA = a.submittedDate && !isNaN(new Date(a.submittedDate).getTime()) ? new Date(a.submittedDate) : new Date(0);
-    const dateB = b.submittedDate && !isNaN(new Date(b.submittedDate).getTime()) ? new Date(b.submittedDate) : new Date(0);
+  
+  const sortedGrades = grades.sort((a, b) => {
+    const getValidDate = (dateValue) => {
+      if (!dateValue) return new Date(0);
+      const testDate = new Date(dateValue);
+      return testDate && !isNaN(testDate.getTime()) && testDate.getTime() !== 0 ? testDate : new Date(0);
+    };
+    const dateA = getValidDate(a.submittedDate);
+    const dateB = getValidDate(b.submittedDate);
     return dateA - dateB;
   });
+  
   const dataPoints = sortedGrades.map(grade => {
     const assignment = assignments.find(a => a.Id === grade.assignmentId);
     return {
@@ -89,9 +96,9 @@ const sortedGrades = grades.sort((a, b) => {
 export const analyzePerformance = (grades) => {
   if (!grades || grades.length === 0) return null;
   
-  const scores = grades.map(g => g.score_c);
+  const scores = grades.map(g => g.score);
   const average = calculateGradeAverage(grades);
-  const trend = calculateGradeTrend(grades.map((grade, index) => ({ x: index, y: grade.score_c })));
+  const trend = calculateGradeTrend(grades.map((grade, index) => ({ x: index, y: grade.score })));
   
   const isImproving = trend.length > 1 && trend[trend.length - 1].y > trend[0].y;
   const consistency = Math.max(...scores) - Math.min(...scores);

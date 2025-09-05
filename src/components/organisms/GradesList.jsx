@@ -169,7 +169,13 @@ const sortedAssignments = [...assignments].sort((a, b) => {
                       </span>
                     </td>
 <td className="py-4 px-4 text-center text-sm text-slate-900">
-                      {assignment.due_date_c && !isNaN(new Date(assignment.due_date_c).getTime()) ? format(new Date(assignment.due_date_c), "MMM dd, yyyy") : "No Due Date"}
+                      {(() => {
+                        if (!assignment.due_date_c) return "No Due Date";
+                        const dueDate = new Date(assignment.due_date_c);
+                        return dueDate && !isNaN(dueDate.getTime()) && dueDate.getTime() !== 0 
+                          ? format(dueDate, "MMM dd, yyyy") 
+                          : "No Due Date";
+                      })()}
                     </td>
                     <td className="py-4 px-4 text-center text-sm font-medium text-slate-900">
                       {assignment.totalPoints}
