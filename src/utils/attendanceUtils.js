@@ -38,11 +38,11 @@ export const formatAttendanceDate = (date) => {
 
 export const getTodayAttendanceStats = (students, attendanceRecords) => {
   const today = format(new Date(), "yyyy-MM-dd");
-  const todayAttendance = attendanceRecords.filter(record => record.date === today);
+  const todayAttendance = attendanceRecords.filter(record => record.date_c === today);
   
-  const present = todayAttendance.filter(record => record.status === "present").length;
-  const absent = todayAttendance.filter(record => record.status === "absent").length;
-  const late = todayAttendance.filter(record => record.status === "late").length;
+  const present = todayAttendance.filter(record => record.status_c === "present").length;
+  const absent = todayAttendance.filter(record => record.status_c === "absent").length;
+  const late = todayAttendance.filter(record => record.status_c === "late").length;
   const total = students.length;
   
   return { present, absent, late, total, percentage: Math.round((present / total) * 100) };

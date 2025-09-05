@@ -87,9 +87,9 @@ export const formatChartData = (grades, assignments) => {
 export const analyzePerformance = (grades) => {
   if (!grades || grades.length === 0) return null;
   
-  const scores = grades.map(g => g.score);
+  const scores = grades.map(g => g.score_c);
   const average = calculateGradeAverage(grades);
-  const trend = calculateGradeTrend(grades.map((grade, index) => ({ x: index, y: grade.score })));
+  const trend = calculateGradeTrend(grades.map((grade, index) => ({ x: index, y: grade.score_c })));
   
   const isImproving = trend.length > 1 && trend[trend.length - 1].y > trend[0].y;
   const consistency = Math.max(...scores) - Math.min(...scores);
