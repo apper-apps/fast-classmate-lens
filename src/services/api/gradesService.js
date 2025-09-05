@@ -11,8 +11,27 @@ export const gradesService = {
   },
 
   async getByStudentId(studentId) {
-    await delay(200);
+await delay(200);
     const studentGrades = grades.filter(g => g.studentId === parseInt(studentId));
+    return [...studentGrades];
+  },
+
+  async getByStudentIdWithFilter(studentId, filters = {}) {
+    await delay(200);
+    let studentGrades = grades.filter(g => g.studentId === parseInt(studentId));
+    
+    if (filters.startDate) {
+      studentGrades = studentGrades.filter(g => g.submittedDate >= filters.startDate);
+    }
+    
+    if (filters.endDate) {
+      studentGrades = studentGrades.filter(g => g.submittedDate <= filters.endDate);
+    }
+    
+    if (filters.assignmentId) {
+      studentGrades = studentGrades.filter(g => g.assignmentId === parseInt(filters.assignmentId));
+    }
+    
     return [...studentGrades];
   },
 

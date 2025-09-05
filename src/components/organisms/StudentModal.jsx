@@ -1,11 +1,11 @@
-import React, { useState, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
+import React, { useEffect, useState } from "react";
+import { AnimatePresence, motion } from "framer-motion";
 import { toast } from "react-toastify";
-import ApperIcon from "@/components/ApperIcon";
-import Button from "@/components/atoms/Button";
-import FormField from "@/components/molecules/FormField";
+import PerformanceChart from "@/components/organisms/PerformanceChart";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/atoms/Card";
-
+import ApperIcon from "@/components/ApperIcon";
+import FormField from "@/components/molecules/FormField";
+import Button from "@/components/atoms/Button";
 const StudentModal = ({ 
   isOpen, 
   onClose, 
@@ -136,133 +136,138 @@ const StudentModal = ({
     { value: "inactive", label: "Inactive" }
   ];
 
+const [activeTab, setActiveTab] = useState('details');
+
   return (
     <AnimatePresence>
-      {isOpen && (
-        <>
-          {/* Backdrop */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.2 }}
+    {isOpen && <>
+        {/* Backdrop */}
+        <motion.div
+            initial={{
+                opacity: 0
+            }}
+            animate={{
+                opacity: 1
+            }}
+            exit={{
+                opacity: 0
+            }}
+            transition={{
+                duration: 0.2
+            }}
             className="fixed inset-0 z-50 bg-black bg-opacity-50 backdrop-blur-sm flex items-center justify-center p-4"
-            onClick={onClose}
-          />
-
-          {/* Modal */}
-          <motion.div
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            exit={{ opacity: 0, scale: 0.95 }}
-            transition={{ duration: 0.2 }}
-            className="fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none"
-          >
-            <Card className="w-full max-w-lg pointer-events-auto">
-              <CardHeader>
-                <div className="flex items-center justify-between">
-                  <CardTitle className="flex items-center space-x-2">
-                    <ApperIcon name="User" size={20} className="text-primary" />
-                    <span>{getModalTitle()}</span>
-                  </CardTitle>
-                  <Button
-                    variant="ghost"
-                    size="icon"
-                    onClick={onClose}
-                  >
-                    <ApperIcon name="X" size={16} />
-                  </Button>
-                </div>
-              </CardHeader>
-              
-              <CardContent>
-                <form onSubmit={handleSubmit} className="space-y-4">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <FormField
-                      label="First Name"
-                      name="firstName"
-                      value={formData.firstName}
-                      onChange={handleChange}
-                      error={errors.firstName}
-                      disabled={mode === "view"}
-                      placeholder="Enter first name"
-                    />
-
-                    <FormField
-                      label="Last Name"
-                      name="lastName"
-                      value={formData.lastName}
-                      onChange={handleChange}
-                      error={errors.lastName}
-                      disabled={mode === "view"}
-                      placeholder="Enter last name"
-                    />
-                  </div>
-
-                  <FormField
-                    label="Email Address"
-                    name="email"
-                    type="email"
-                    value={formData.email}
-                    onChange={handleChange}
-                    error={errors.email}
-                    disabled={mode === "view"}
-                    placeholder="Enter email address"
-                  />
-
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <FormField
-                      label="Grade Level"
-                      name="gradeLevel"
-                      type="select"
-                      value={formData.gradeLevel}
-                      onChange={handleChange}
-                      error={errors.gradeLevel}
-                      disabled={mode === "view"}
-                      options={gradeOptions}
-                    />
-
-                    <FormField
-                      label="Status"
-                      name="status"
-                      type="select"
-                      value={formData.status}
-                      onChange={handleChange}
-                      error={errors.status}
-                      disabled={mode === "view"}
-                      options={statusOptions}
-                    />
-                  </div>
-
-                  {mode !== "view" && (
-                    <div className="flex justify-end space-x-3 pt-4">
-                      <Button
-                        type="button"
-                        variant="outline"
-                        onClick={onClose}
-                        disabled={isSaving}
-                      >
-                        Cancel
-                      </Button>
-                      <Button
-                        type="submit"
-                        disabled={isSaving}
-                        className="btn-pulse"
-                      >
-                        {isSaving && (
-                          <ApperIcon name="Loader2" size={16} className="mr-2 animate-spin" />
-                        )}
-                        {mode === "edit" ? "Update Student" : "Add Student"}
-                      </Button>
+            onClick={onClose} />
+        {/* Modal */}
+        <motion.div
+            initial={{
+                opacity: 0,
+                scale: 0.95
+            }}
+            animate={{
+                opacity: 1,
+                scale: 1
+            }}
+            exit={{
+                opacity: 0,
+                scale: 0.95
+            }}
+            transition={{
+                duration: 0.2
+            }}
+            className="fixed inset-0 z-50 flex items-center justify-center p-4 pointer-events-none">
+            <Card
+                className={`w-full pointer-events-auto ${mode === "view" && activeTab === "chart" ? "max-w-4xl" : "max-w-lg"}`}>
+                <CardHeader>
+                    <div className="flex items-center justify-between">
+                        <CardTitle className="flex items-center space-x-2">
+                            <ApperIcon name="User" size={20} className="text-primary" />
+                            <span>{getModalTitle()}</span>
+                        </CardTitle>
+                        {mode === "view" && <div className="flex space-x-1">
+                            <Button
+                                variant={activeTab === "details" ? "default" : "ghost"}
+                                size="sm"
+                                onClick={() => setActiveTab("details")}>
+                                <ApperIcon name="User" size={16} className="mr-1" />Details
+                                                      </Button>
+                            <Button
+                                variant={activeTab === "chart" ? "default" : "ghost"}
+                                size="sm"
+                                onClick={() => setActiveTab("chart")}>
+                                <ApperIcon name="TrendingUp" size={16} className="mr-1" />Performance
+                                                      </Button>
+                        </div>}
+                        <Button variant="ghost" size="icon" onClick={onClose} disabled={isSaving}>
+                            <ApperIcon name="X" size={16} />
+                        </Button>
                     </div>
-                  )}
-                </form>
-              </CardContent>
+                </CardHeader>
+                <CardContent>
+                    {mode === "view" && activeTab === "chart" ? <PerformanceChart studentId={student?.Id} /> : <form onSubmit={handleSubmit} className="space-y-4">
+                        <Button variant="ghost" size="icon" onClick={onClose}>
+                            <ApperIcon name="X" size={16} />
+                        </Button>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <FormField
+                                label="First Name"
+                                name="firstName"
+                                value={formData.firstName}
+                                onChange={handleChange}
+                                error={errors.firstName}
+                                disabled={mode === "view"}
+                                placeholder="Enter first name" />
+                            <FormField
+                                label="Last Name"
+                                name="lastName"
+                                value={formData.lastName}
+                                onChange={handleChange}
+                                error={errors.lastName}
+                                disabled={mode === "view"}
+                                placeholder="Enter last name" />
+                        </div>
+                        <FormField
+                            label="Email Address"
+                            name="email"
+                            type="email"
+                            value={formData.email}
+                            onChange={handleChange}
+                            error={errors.email}
+                            disabled={mode === "view"}
+                            placeholder="Enter email address" />
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <FormField
+                                label="Grade Level"
+                                name="gradeLevel"
+                                type="select"
+                                value={formData.gradeLevel}
+                                onChange={handleChange}
+                                error={errors.gradeLevel}
+                                disabled={mode === "view"}
+                                options={gradeOptions} />
+                            <FormField
+                                label="Status"
+                                name="status"
+                                type="select"
+                                value={formData.status}
+                                onChange={handleChange}
+                                error={errors.status}
+                                disabled={mode === "view"}
+                                options={statusOptions} />
+                        </div>
+                        {mode !== "view" && <div className="flex justify-end space-x-3 pt-4">
+                            <Button type="button" variant="outline" onClick={onClose} disabled={isSaving}>Cancel
+                                                        </Button>
+                            <Button type="submit" disabled={isSaving} className="btn-pulse">
+                                {isSaving && <ApperIcon name="Loader2" size={16} className="mr-2 animate-spin" />}
+                                {mode === "edit" ? "Update Student" : "Add Student"}
+                            </Button>
+                        </div>}
+                    </form>}
+                </CardContent>
             </Card>
-          </motion.div>
-        </>
-      )}
-    </AnimatePresence>
+        </motion.div>
+    </>}
+</AnimatePresence>
   );
 };
 

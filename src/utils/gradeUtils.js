@@ -40,3 +40,64 @@ export const calculateAssignmentStats = (grades, totalPoints) => {
   
   return { submitted, average, total };
 };
+
+export const calculateGradeTrend = (dataPoints) => {
+  if (!dataPoints || dataPoints.length < 2) return [];
+  
+  // Simple linear regression for trend line
+  const n = dataPoints.length;
+  const sumX = dataPoints.reduce((sum, point, index) => sum + index, 0);
+  const sumY = dataPoints.reduce((sum, point) => sum + point.y, 0);
+  const sumXY = dataPoints.reduce((sum, point, index) => sum + (index * point.y), 0);
+  const sumXX = dataPoints.reduce((sum, point, index) => sum + (index * index), 0);
+  
+  const slope = (n * sumXY - sumX * sumY) / (n * sumXX - sumX * sumX);
+  const intercept = (sumY - slope * sumX) / n;
+  
+  return dataPoints.map((point, index) => ({
+    x: point.x,
+    y: Math.max(0, Math.min(100, slope * index + intercept))
+  }));
+};
+
+export const formatChartData = (grades, assignments) => {
+  if (!grades || !assignments || grades.length === 0) return { series: [], categories: [] };
+  
+  const sortedGrades = grades.sort((a, b) => new Date(a.submittedDate) - new Date(b.submittedDate));
+  
+  const dataPoints = sortedGrades.map(grade => {
+    const assignment = assignments.find(a => a.Id === grade.assignmentId);
+    return {
+      x: grade.submittedDate,
+      y: grade.score,
+      assignment: assignment?.title || 'Unknown Assignment',
+      category: assignment?.category || 'N/A'
+    };
+  });
+  
+  return {
+    series: [{
+      name: 'Grades',
+      data: dataPoints
+    }],
+    categories: dataPoints.map(point => point.x)
+  };
+};
+
+export const analyzePerformance = (grades) => {
+  if (!grades || grades.length === 0) return null;
+  
+  const scores = grades.map(g => g.score);
+  const average = calculateGradeAverage(grades);
+  const trend = calculateGradeTrend(grades.map((grade, index) => ({ x: index, y: grade.score })));
+  
+  const isImproving = trend.length > 1 && trend[trend.length - 1].y > trend[0].y;
+  const consistency = Math.max(...scores) - Math.min(...scores);
+  
+  return {
+    average,
+    trend: isImproving ? 'improving' : 'declining',
+    consistency: consistency < 15 ? 'high' : consistency < 30 ? 'medium' : 'low',
+    totalAssignments: grades.length
+  };
+};
