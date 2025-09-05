@@ -33,15 +33,19 @@ export const generateWeekDays = (date = new Date()) => {
 };
 
 export const formatAttendanceDate = (date) => {
-  if (!date || isNaN(new Date(date).getTime())) {
+  if (!date || date === null || date === undefined) {
     return "Invalid Date";
   }
-  return format(new Date(date), "MMM dd, yyyy");
+  const testDate = new Date(date);
+  if (isNaN(testDate.getTime())) {
+    return "Invalid Date";
+  }
+  return format(testDate, "MMM dd, yyyy");
 };
 
 export const getTodayAttendanceStats = (students, attendanceRecords) => {
   const now = new Date();
-  if (isNaN(now.getTime())) {
+  if (!now || isNaN(now.getTime())) {
     return { present: 0, absent: 0, late: 0, total: students?.length || 0, percentage: 0 };
   }
   const today = format(now, "yyyy-MM-dd");

@@ -31,10 +31,12 @@ const sortedAssignments = [...assignments].sort((a, b) => {
     let aValue = a[sortField];
     let bValue = b[sortField];
 
-    if (sortField === "dueDate") {
+if (sortField === "dueDate") {
       // Handle date sorting with proper validation
-      aValue = aValue && !isNaN(new Date(aValue).getTime()) ? new Date(aValue) : new Date(0);
-      bValue = bValue && !isNaN(new Date(bValue).getTime()) ? new Date(bValue) : new Date(0);
+      aValue = aValue && aValue !== null && aValue !== undefined ? new Date(aValue) : null;
+      bValue = bValue && bValue !== null && bValue !== undefined ? new Date(bValue) : null;
+      aValue = aValue && !isNaN(aValue.getTime()) ? aValue : new Date(0);
+      bValue = bValue && !isNaN(bValue.getTime()) ? bValue : new Date(0);
     }
 
     if (sortDirection === "asc") {
@@ -170,7 +172,7 @@ const sortedAssignments = [...assignments].sort((a, b) => {
                     </td>
 <td className="py-4 px-4 text-center text-sm text-slate-900">
                       {(() => {
-                        if (!assignment.due_date_c) return "No Due Date";
+if (!assignment.due_date_c || assignment.due_date_c === null || assignment.due_date_c === undefined) return "No Due Date";
                         const dueDate = new Date(assignment.due_date_c);
                         return dueDate && !isNaN(dueDate.getTime()) && dueDate.getTime() !== 0 
                           ? format(dueDate, "MMM dd, yyyy") 

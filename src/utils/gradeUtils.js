@@ -64,8 +64,8 @@ export const formatChartData = (grades, assignments) => {
   if (!grades || !assignments || grades.length === 0) return { series: [], categories: [] };
   
   const sortedGrades = grades.sort((a, b) => {
-    const getValidDate = (dateValue) => {
-      if (!dateValue) return new Date(0);
+const getValidDate = (dateValue) => {
+      if (!dateValue || dateValue === null || dateValue === undefined) return new Date(0);
       const testDate = new Date(dateValue);
       return testDate && !isNaN(testDate.getTime()) && testDate.getTime() !== 0 ? testDate : new Date(0);
     };
